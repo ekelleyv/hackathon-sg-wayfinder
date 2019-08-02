@@ -41,8 +41,8 @@ const Address1 = styled.div`
 const Address2 = styled.div`
 `;
 
-const Logo = styled.img.attrs({
-    src: 'image url here'
+const Logo= styled.img.attrs({
+    src: 'logo.svg'
   })`
   width: 40px;
   height: 40px;
@@ -53,7 +53,7 @@ function App() {
   return (
     <AppContainer>
       <Header>
-        <Logo src={'logo.svg'}/>
+        <Logo/>
         <RightContainer>
           <Address1>
             SeatGeek HQ

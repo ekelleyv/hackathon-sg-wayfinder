@@ -2,15 +2,10 @@
 import { Component } from 'react';
 import React from 'react';
 import styled from 'styled-components';
+import ReactSearchBox from 'react-search-box'
 import mapboxgl from 'mapbox-gl';
 
 mapboxgl.accessToken = 'pk.eyJ1IjoibWFwYm94IiwiYSI6ImNpejY4M29iazA2Z2gycXA4N2pmbDZmangifQ.-g_vE53SD2WrJ6tFX7QHmA';
-
-const demoOrder = [
-  "world",
-  "office",
-  "tv",
-]
 
 const locations = {
   "world": {
@@ -44,6 +39,13 @@ const locations = {
     zoom: 21.412606769796117,
     bearing: 101.98881058620714,
     pitch: 40,
+    speed: 0.8
+  },
+  "jack": {
+    center: [-73.98943057776535, 40.73923886388985],
+    zoom: 22.212606769796117,
+    bearing: 119.1032866973844,
+    pitch: 0,
     speed: 0.8
   }
 }
@@ -81,6 +83,22 @@ const ActionButton = styled.button`
   box-shadow: 10px 10px 21px -9px rgba(0,0,0,0.39);
 `;
 
+const JackContainer = styled.div`
+  overflow: hidden;
+  border-radius: 50%;
+  width: 60px;
+  height: 60px;
+`;
+const Jack = styled.img.attrs({
+  src: 'jack.jpg'
+})`
+  display: inline;
+  margin: 0 auto;
+  height: 100%;
+  width: auto;
+  cursor: pointer;
+`;
+
 class MapboxMap extends Component {
 
   constructor(props) {
@@ -109,6 +127,14 @@ class MapboxMap extends Component {
       this.map.setPaintProperty('ml3', 'fill-opacity', 0);
       this.map.setPaintProperty('ml4', 'fill-opacity', 0);
       this.map.setPaintProperty('labels', 'text-opacity', 0);
+    }
+
+    if (this.state.mode === "jack") {
+      this.map.setPaintProperty('jack', 'fill-opacity', 0.6);
+      this.map.setPaintProperty('route', 'line-opacity', 0.6);
+    } else {
+      this.map.setPaintProperty('jack', 'fill-opacity', 0);
+      this.map.setPaintProperty('route', 'line-opacity', 0);
     }
 
     if (this.state.mode === "nearby") {
@@ -158,7 +184,7 @@ class MapboxMap extends Component {
         "type": "geojson",
         "data": {
           "type": "Point",
-          "coordinates": locations.tv.center
+          "coordinates": [-73.98942367062357, 40.739338685581686]
         }
       });
 
@@ -299,7 +325,7 @@ class MapboxMap extends Component {
               "properties": {
                 "title": "Open",
               }
-            },{
+            }, {
               "type": "Feature",
               "geometry": {
                 "type": "Point",
@@ -308,7 +334,7 @@ class MapboxMap extends Component {
               "properties": {
                 "title": "Occupied",
               }
-            },{
+            }, {
               "type": "Feature",
               "geometry": {
                 "type": "Point",
@@ -317,7 +343,7 @@ class MapboxMap extends Component {
               "properties": {
                 "title": "Occupied",
               }
-            },{
+            }, {
               "type": "Feature",
               "geometry": {
                 "type": "Point",
@@ -358,7 +384,7 @@ class MapboxMap extends Component {
                 "title": "Union Square\nSubway",
                 "icon": "rail-metro"
               }
-            },{
+            }, {
               "type": "Feature",
               "geometry": {
                 "type": "Point",
@@ -367,7 +393,7 @@ class MapboxMap extends Component {
               "properties": {
                 "title": "Outback\nSteakhouse",
               }
-            },{
+            }, {
               "type": "Feature",
               "geometry": {
                 "type": "Point",
@@ -375,15 +401,16 @@ class MapboxMap extends Component {
               },
               "properties": {
                 "title": "Gramercy Tavern",
-              }},{
-                "type": "Feature",
-                "geometry": {
-                  "type": "Point",
-                  "coordinates": [-73.988183, 40.741468]
-                },
-                "properties": {
-                  "title": "Shake Shack",
-                }
+              }
+            }, {
+              "type": "Feature",
+              "geometry": {
+                "type": "Point",
+                "coordinates": [-73.988183, 40.741468]
+              },
+              "properties": {
+                "title": "Shake Shack",
+              }
             }]
           }
         },
@@ -400,6 +427,65 @@ class MapboxMap extends Component {
           'text-halo-color': "#fff",
           'text-halo-width': 2,
           'text-opacity-transition': { duration: 1000 },
+        }
+      });
+
+
+      this.map.addLayer({
+        'id': 'jack',
+        'type': 'fill',
+        'source': {
+          'type': 'geojson',
+          'data': {
+            'type': 'Feature',
+            'geometry': {
+              'type': 'Polygon',
+              'coordinates': [[[-73.98940941644133, 40.73915429657387],
+              [-73.98941376115552, 40.73914840633526],
+              [-73.98942568961334, 40.73915305406223],
+              [-73.98942167772744, 40.739159308928464],
+              [-73.98940941644133, 40.73915429657387]]]
+            }
+          }
+        },
+        'layout': {},
+        'paint': {
+          'fill-color': '#61be10',
+          'fill-opacity': 0,
+          'fill-opacity-transition': { duration: 1000 }
+        }
+      });
+
+
+      this.map.addLayer({
+        "id": "route",
+        "type": "line",
+        "source": {
+          "type": "geojson",
+          "data": {
+            "type": "Feature",
+            "properties": {},
+            "geometry": {
+              "type": "LineString",
+              "coordinates": [
+                [-73.98942367062357, 40.739338685581686],
+                [-73.98939595256763, 40.73932537572796],
+                [-73.98950386446162, 40.73917584154643],
+                [-73.98942676083836, 40.73914303251928],
+                [-73.98942075732752, 40.739151171625565]
+              ]
+            }
+          }
+        },
+        "layout": {
+          "line-join": "round",
+          "line-cap": "round"
+        },
+        "paint": {
+          "line-opacity": 0,
+          'line-opacity-transition': { duration: 1000 },
+          "line-color": "#61be10",
+          "line-width": 8
         }
       });
 
@@ -451,6 +537,9 @@ class MapboxMap extends Component {
           <ActionButton onClick={() => { this.setState({ mode: 'rooms' }) }}>
             Meeting Rooms
             </ActionButton>
+          <JackContainer onClick={() => { this.setState({ mode: 'jack' }) }}>
+            <Jack />
+          </JackContainer>
         </MapActions>
       </MapContainer>
     );
