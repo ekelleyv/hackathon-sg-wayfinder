@@ -10,7 +10,7 @@
     "react-scripts": "3.0.1",
     "react-search-box": "^2.0.1",
     "styled-components": "^4.3.2",
-    "three": "^0.107.0"
+    "three": "^0.125.0"
   },
   "scripts": {
     "predeploy": "yarn run build",
